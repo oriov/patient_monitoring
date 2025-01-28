@@ -85,11 +85,6 @@ if __name__ == '__main__':
         for patient in patients:
             print(patient)
 
-    # Get a specific patient by ID
-    patient_data = dao.get_patient_by_id(12345)
-    if patient_data:
-        print(patient_data)
-
     # Disconnect from the database
     dao.disconnect()
 
