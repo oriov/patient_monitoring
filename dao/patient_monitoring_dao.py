@@ -35,34 +35,34 @@ class PatientDAO:
         """Fetch patients hospitalized for more than 48 hours without new tests"""
         query = """
             SELECT 
-    patient_id,
-    first_name,
-    last_name,
-    date_of_birth,
-    DATE_FORMAT(STR_TO_DATE(CONCAT(admission_date, ' ', admission_time),
-                    '%m/%d/%Y %h:%i:%s %p'),
-            '%Y-%m-%d %H:%i:%s') admission_date,
-    last_time_results,
-    department,
-    room_number
-FROM
-    patient_information
-        JOIN
-    admissions USING (patient_id)
-        JOIN
-    (SELECT 
-        MAX(STR_TO_DATE(CONCAT(performed_date, ' ', performed_time), '%m/%d/%Y %h:%i:%s %p')) last_time_results,
-            patient_id
-    FROM
-        admissions
-    JOIN lab_tests USING (patient_id)
-    JOIN lab_results USING (test_id)
-    WHERE
-        (release_date IS NULL
-            OR release_time IS NULL)
-            AND TIMESTAMPDIFF(HOUR, STR_TO_DATE(CONCAT(admission_date, ' ', admission_time), '%m/%d/%Y %h:%i:%s %p'), NOW()) > 48
-    GROUP BY patient_id
-    HAVING TIMESTAMPDIFF(HOUR, MAX(STR_TO_DATE(CONCAT(performed_date, ' ', performed_time), '%m/%d/%Y %h:%i:%s %p')), NOW()) > 48) last_time_results USING (patient_id)
+                patient_id,
+                first_name,
+                last_name,
+                date_of_birth,
+                DATE_FORMAT(STR_TO_DATE(CONCAT(admission_date, ' ', admission_time),
+                                '%m/%d/%Y %h:%i:%s %p'),
+                        '%Y-%m-%d %H:%i:%s') admission_date,
+                last_time_results,
+                department,
+                room_number
+            FROM
+                patient_information
+                    JOIN
+                admissions USING (patient_id)
+                    JOIN
+                (SELECT 
+                    MAX(STR_TO_DATE(CONCAT(performed_date, ' ', performed_time), '%m/%d/%Y %h:%i:%s %p')) last_time_results,
+                        patient_id
+                FROM
+                    admissions
+                JOIN lab_tests USING (patient_id)
+                JOIN lab_results USING (test_id)
+                WHERE
+                    (release_date IS NULL
+                        OR release_time IS NULL)
+                        AND TIMESTAMPDIFF(HOUR, STR_TO_DATE(CONCAT(admission_date, ' ', admission_time), '%m/%d/%Y %h:%i:%s %p'), NOW()) > 48
+                GROUP BY patient_id
+                HAVING TIMESTAMPDIFF(HOUR, MAX(STR_TO_DATE(CONCAT(performed_date, ' ', performed_time), '%m/%d/%Y %h:%i:%s %p')), NOW()) > 48) last_time_results USING (patient_id)
         """
         cursor = self.connection.cursor(dictionary=True)
         try:
